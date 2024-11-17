@@ -19,8 +19,8 @@ class Personagem():
 
         self.modificador = [0, 0, 0] # MODIFICADORES DOS ATRIBUTOS BASE
 
-        def habilidade(self): # TODOS OS PERSONAGENS TERÃO UMA HABILIDADE ÚNICA PARA ELES
-            raise NotImplementedError
+    def habilidade(self): # TODOS OS PERSONAGENS TERÃO UMA HABILIDADE ÚNICA PARA ELES
+        raise NotImplementedError
 
     # AS PROPRIEDADES SERVEM PARA RESUMIR OS VALORES BASE COM OS MODIFICADORES EM UM LUGAR SÓ, FACILITANDO A SUA UTILIZAÇÃO NO CÓDIGO
 
@@ -244,36 +244,3 @@ def criar_inimigos():
 def ordenaVelocidade(personagens):
     personagens.sort(reverse = True, key= lambda p: p.velocidade)
     print([str(personagem) for personagem in personagens])
-
-
-# ~~~~~~~~~~~~~~~ CLASSES ^ ~~ CÓDIGO v ~~~~~~~~~~~~~~~ #
-
-
-def simular():
-    # Aliados = criar_aliados()
-    # Inimigos = criar_inimigos()
-
-    # Personagens = Aliados + Inimigos
-    # print([str(personagem) for personagem in Personagens])
-    # ordenaVelocidade(Personagens)
-
-    return None
-
-simular()
-
-amigo = Assassino('amigo')
-desamigo = Inimigo('desamigo')
-
-for i in range(2):
-    amigo.mostrarStats()
-    amigo.espreitar()
-    amigo.mostrarStats()
-    desamigo.atacar(amigo)
-    input()
-
-amigo.atacar(desamigo)
-desamigo.atacar(amigo)
-amigo.atacar(desamigo)
-desamigo.atacar(amigo)
-amigo.atacar(desamigo)
-desamigo.atacar(amigo)
