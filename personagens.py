@@ -19,6 +19,9 @@ class Personagem():
 
         self.modificador = [0, 0, 0] # MODIFICADORES DOS ATRIBUTOS BASE
 
+        def habilidade(self): # TODOS OS PERSONAGENS TERÃO UMA HABILIDADE ÚNICA PARA ELES
+            raise NotImplementedError
+
     # AS PROPRIEDADES SERVEM PARA RESUMIR OS VALORES BASE COM OS MODIFICADORES EM UM LUGAR SÓ, FACILITANDO A SUA UTILIZAÇÃO NO CÓDIGO
 
     def __str__(self):
@@ -93,7 +96,7 @@ class Guerreiro(Personagem):
     def __init__(self, nome):
         super().__init__(nome, ATK=5, DEF=3, VEL=1)
 
-    def pancada(self, alvo): # PANCADA: ATAQUE DESCONSIDERA DEFESA, CAUSANDO 3x SEU ATAQUE, MAS DEIXA QUEBRADO
+    def habilidade(self, alvo): # PANCADA: ATAQUE DESCONSIDERA DEFESA, CAUSANDO 3x SEU ATAQUE, MAS DEIXA QUEBRADO
         if not self.quebrado:
             dano = round(self.ataque * 3)
             alvo.mudar_pv(dano) 
@@ -108,7 +111,7 @@ class Assassino(Personagem):
         super().__init__(nome, ATK=5, DEF=1, VEL=3)
         self.espreita = False
 
-    def espreitar(self): # ESPREITAR: FICA INVULNERÁVEL E GANHA 2 DE ATAQUE A CADA RODADA INVULNERÁVEL, MAS DEIXA QUEBRADO
+    def habilidade(self): # ESPREITAR: FICA INVULNERÁVEL E GANHA 2 DE ATAQUE A CADA RODADA INVULNERÁVEL, MAS DEIXA QUEBRADO
         if not self.quebrado:
             if self.vulneravel:
                 self.vulneravel = False
@@ -124,7 +127,7 @@ class Tanque(Personagem):
     def __init__(self, nome):
         super().__init__(nome, ATK=3, DEF=5, VEL=1)
 
-    def sentinela(self, alvo): # SENTINELA: AUMENTA A PRÓPRIA DEFESA E A DE UM ALIADO
+    def habilidade(self, alvo): # SENTINELA: AUMENTA A PRÓPRIA DEFESA E A DE UM ALIADO
         self.modificador[1] += self.defesa + 3
         alvo.modificador[1] += alvo.defesa + 3
         print(f'{self.nome} SE FORTIFICA, PROTEGENDO {alvo.nome}')
@@ -134,7 +137,7 @@ class Curandeiro(Personagem):
     def __init__(self, nome):
         super().__init__(nome, ATK=1, DEF=5, VEL=3)
 
-    def cura(self, alvo): # CURA: REGENERA VIDA E LIMPA A CONDIÇÃO "QUEBRADO"
+    def habilidade(self, alvo): # CURA: REGENERA VIDA E LIMPA A CONDIÇÃO "QUEBRADO"
         cura = (3 + alvo.defesa) * -1
         if cura > -3:
             cura = -3
@@ -150,7 +153,7 @@ class Mago(Personagem):
     def __init__(self, nome):
         super().__init__(nome, ATK=3, DEF=1, VEL=5)
 
-    def fogo(self, inimigos): # FOGO: CAUSA DANO A TODOS OS INIMIGOS, MAS TOMA DANO DO PRÓPRIO ATAQUE
+    def habilidade(self, inimigos): # FOGO: CAUSA DANO A TODOS OS INIMIGOS, MAS TOMA DANO DO PRÓPRIO ATAQUE
         for inimigo in inimigos:
             dano = (self.ataque) * ((self.velocidade) + 1 - (inimigo.velocidade))
             if dano > 0:
@@ -167,7 +170,7 @@ class Bardo(Personagem):
     def __init__(self, nome):
         super().__init__(nome, ATK=1, DEF=3, VEL=5)
 
-    def inspirar(self, alvo): # INSPIRAR: ADICIONA 5 DE MOD EM UM STAT ALEATÓRIO DE UM ALIADO
+    def habilidade(self, alvo): # INSPIRAR: ADICIONA 5 DE MOD EM UM STAT ALEATÓRIO DE UM ALIADO
         stat = random.randint(0,2)
         alvo.modificador[stat] += 5
         stats = ['ATAQUE', 'DEFESA', 'VELOCIDADE']
@@ -180,7 +183,7 @@ class Inimigo(Personagem):
         self.insanidadeModificador = [0, 0, 0]
         self.ehInimigo = True
 
-    def insanidade(self): # INSANIDADE: A CADA RODADA OS INIMIGOS GANHAM MODIFICADORES NOVOS NOS STATS DELES
+    def habilidade(self): # INSANIDADE: A CADA RODADA OS INIMIGOS GANHAM MODIFICADORES NOVOS NOS STATS DELES
         regulador = 6
         for mod in range(3):
             self.modificador[mod] -= self.insanidadeModificador[mod]
@@ -243,7 +246,7 @@ def ordenaVelocidade(personagens):
     print([str(personagem) for personagem in personagens])
 
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CLASSES ^ ~~~~ CÓDIGO v ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+# ~~~~~~~~~~~~~~~ CLASSES ^ ~~ CÓDIGO v ~~~~~~~~~~~~~~~ #
 
 
 def simular():

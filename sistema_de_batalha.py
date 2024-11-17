@@ -1,4 +1,5 @@
 import personagens as pers
+import random
 
 def criar_aliado(): # CRIADOR DE HERÓI
     print('DE QUAL CLASSE SEU PERSONAGEM SERÁ?')
@@ -79,9 +80,128 @@ def verificar(personagens): # VERIFICAÇÃO DE VIVOS E DA SITUAÇÃO DA BATALHA.
         return True
     else:
         return False
-        
 
-def fimBatalha(resultado):
+def mudar_pv(self, dano): # ALTERADOR DA VIDA DOS PERSONAGENS
+    self.vida -= dano
+
+    print(f"Vida atual de {self.nome}: {self.vidaAtual}")
+
+def estarSeDefendendo(self): # INSPECIONA SE O PERSONAGEM ATUAL ESTÁ SE DEFENDENDO
+    return self.defendendo
+
+def defender(self): # QUANDO É ESCOLHIDA A OPÇÃO DEFESA
+    self.modClear()
+    self.mod[1] += self.baseDefesa
+
+def pararDeDefender(self): # QUANDO O PERSONAGEM PARA DE SE DEFENDER
+    if self.estarSeDefendendo(self):
+        self.DEF = int (self.DEF * 0.5)
+        self.defendendo = False
+
+def atacar(self, alvo): # QUANDO É ESCOLHIDA A OPÇÃO ATAQUE
+        if self.quebrado:
+            return print(f'O {self.nome} ESTÁ QUEBRADO E NÃO CONSEGUE ATACAR') # PERSONAGENS QUEBRADOS NÃO ATACAM
+
+        if alvo.vulneravel:
+            dano = round((self.ataque) * (10 / (10 + alvo.defesa)) * alvo.danoRatio)  # DANO BASE DECIDIDO VEZES UMA RAZÃO 
+            print(f'{self.nome} ATACOU {alvo.nome}, CAUSANDO {dano} DE DANO!')
+            alvo.mudar_pv(dano)
+        else:   # ALVOS INVULNERÁVEIS NÃO PODEM SER ATACADOS E FAZEM O ATACANTE PERDER SEU ATAQUE (na vdd o atacante não poderia atacá-lo, mas ok)
+            print(f'O {alvo.nome} ESTÁ INVULNERÁVEL!')
+
+        if not self.vulneravel: # TODOS QUE ATACAM PERDEM INVULNERABILIDADE. PERDER INVULNERABILIDADE TE DEIXA QUEBRADO. 
+            self.vulneravel = True
+            self.quebrado = True
+
+        self.modClear()
+
+def alvoAtaqueAliado(): # ESCOLHE QUAL ALVO OS HERÓIS ATACARÃO
+    while True:
+        escolha = int (input("Pressione '1' para atacar o Inimigo 1, '2' para o Inimigo 2 ou '3' para o Inimigo 3: "))
+        
+        alvos_validos = []
+        for i in Personagens:
+            if i in Inimigos:
+                alvos_validos.append(i)
+            return alvos_validos
+        
+        if escolha == 1:
+            print(f"Você escolheu atacar Inimigo 1")
+            return alvos_validos[0]
+            break
+
+        elif escolha == 2:
+            print(f"Você escolheu atacar Inimigo 2")
+            return alvos_validos[1]
+            break
+
+        elif escolha == 3:
+            print(f"Você escolheu atacar Inimigo 3")
+            return alvos_validos[2]
+            break
+
+        else:
+            print("Escolha inválida. Tente novamente.")
+
+def alvoHabilidadeAliado(): # ESCOLHE QUAL ALVO OS ALIADOS USARÃO A HABILIDADE
+    while True:
+        escolha = int (input("Pressione '1' para selecionar o Herói 1, '2' para o Herói 2 ou '3' para o Herói 3: "))
+        
+        alvos_validos = []
+        for i in Personagens:
+            if i in Aliados:
+                alvos_validos.append(i)
+            return alvos_validos
+        
+        if escolha == 1:
+            print(f"Você selecionou Herói 1")
+            return alvos_validos[0]
+            break
+
+        elif escolha == 2:
+            print(f"Você selecionou Herói 2")
+            return alvos_validos[1]
+            break
+
+        elif escolha == 3:
+            print(f"Você selecionou Herói 3")
+            return alvos_validos[2]
+            break
+
+        else:
+            print("Escolha inválida. Tente novamente.")
+
+def alvoAtaqueInimigo(): # ESCOLHE QUAL ALVO OS INIMIGOS ATACARÃO
+    alvos_validos = []
+    for i in Personagens:
+        if i in Aliados:
+            alvos_validos.append(i)
+            return alvos_validos
+    return random.choice(alvos_validos)
+
+def escolherAcao (): # PARA OS INIMIGOS ESCOLHEREM SUA AÇÃO
+    acoes = ["defender", "atacar", "habilidade"]
+    acao_escolhida = random.choice(acoes)
+
+    alvo = alvoAtaqueInimigo()
+
+    if acao_escolhida == "defender":
+        defender()
+    elif acao_escolhida == "atacar":
+        atacar(alvo)
+    elif acao_escolhida == "habilidade":
+        habilidade()
+
+def mudarIndice(indice, Personagens): # PASSA A VEZ PRO PRÓXIMO PERSONAGEM NA RODADA SEGUINTE
+    tamanhoLista = len(Personagens)
+    if indice + 1 >= tamanhoLista:
+        indice = 0
+    else:
+        indice += 1
+
+    return indice
+
+def fimBatalha(resultado): # MOSTRA O RESULTADO NO FINAL DA PARTIDA
     if resultado == 1:
         print('INIMIGOS VENCERAM! VOCÊ FOI DERROTADO!')
     elif resultado == 2:
@@ -112,7 +232,52 @@ def simular():
 
             personagem.vida = 0
             
-            # rodar escolha de ação
+#fazendo codigo sistema de batalha
+
+            if indiceAtual in Aliados: # SE O PERSONAGEM DA RODADA POR UM ALIADO
+            
+                entrada_usuario = input("Pressione A para atacar, D para defender, ou X para usar a habilidade: ").lower() # ESCOLHA DA AÇÃO DO PERSONAGEM ATUAL
+
+                if entrada_usuario == 'x':
+                        if indiceAtual == ("Guerreiro"):
+                            alvo = alvoAtaqueAliado
+                        
+                        if indiceAtual == ("Tanque", "Curandeiro" or "Bardo"):
+                            alvo = alvoHabilidadeAliado
+
+                        habilidade()
+                        indiceAtual = mudarIndice(indiceAtual, Personagens)
+                        personagemAtual = Personagens[indiceAtual]
+
+                elif entrada_usuario == 'a':
+                    alvo = alvoAtaqueAliado
+                    entradaAtaque = atacar(personagemAtual, Personagens, Inimigos)
+
+                    if entradaAtaque == 1:
+                        verificaVivos()
+
+                        if verificaVivos:
+                            print(f"{verificaVivos.nome} foi derrotado!")
+
+                            if verificaVivos in Personagens:
+                                Personagens.remove(verificaVivos)
+                        indiceAtual = mudarIndice(indiceAtual, Personagens)
+                        personagemAtual = Personagens[indiceAtual]
+
+                    else:
+                        emExecucao = False
+
+                elif entrada_usuario == 'd':
+                    personagemAtual.defender()
+                    indiceAtual = mudarIndice(indiceAtual, Personagens)
+                    personagemAtual = Personagens[indiceAtual]
+
+            elif indiceAtual in Inimigos: # SE O PERSONAGEM DA RODADA FOR UM INIMIGO
+                escolherAcao()
+                indiceAtual = mudarIndice(indiceAtual, Personagens)
+                personagemAtual = Personagens[indiceAtual]
+
+#termino codigo sistema de batalha
 
             if verificar(Personagens):
                 break
