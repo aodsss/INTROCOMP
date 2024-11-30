@@ -72,6 +72,7 @@ class Guerreiro(Personagem):
 
     def __init__(self, nome):
         super().__init__(nome, ATK=5, DEF=3, VEL=1)
+        self.ehInimigo = False
 
     def habilidade(self, alvo): # PANCADA: ATAQUE DESCONSIDERA DEFESA, CAUSANDO 3x SEU ATAQUE, MAS DEIXA QUEBRADO
         if not self.quebrado:
@@ -87,6 +88,7 @@ class Assassino(Personagem):
     def __init__(self, nome):
         super().__init__(nome, ATK=5, DEF=1, VEL=3)
         self.espreita = False
+        self.ehInimigo = False
 
     def habilidade(self): # ESPREITAR: FICA INVULNERÁVEL E GANHA 2 DE ATAQUE A CADA RODADA INVULNERÁVEL, MAS DEIXA QUEBRADO
         if not self.quebrado:
@@ -103,6 +105,7 @@ class Tanque(Personagem):
 
     def __init__(self, nome):
         super().__init__(nome, ATK=3, DEF=5, VEL=1)
+        self.ehInimigo = False
 
     def habilidade(self, alvo): # SENTINELA: AUMENTA A PRÓPRIA DEFESA E A DE UM ALIADO
         self.modificador[1] += self.defesa + 3
@@ -113,6 +116,7 @@ class Curandeiro(Personagem):
 
     def __init__(self, nome):
         super().__init__(nome, ATK=1, DEF=5, VEL=3)
+        self.ehInimigo = False
 
     def habilidade(self, alvo): # CURA: REGENERA VIDA E LIMPA A CONDIÇÃO "QUEBRADO"
         cura = (3 + alvo.defesa) * -1
@@ -129,6 +133,7 @@ class Mago(Personagem):
 
     def __init__(self, nome):
         super().__init__(nome, ATK=3, DEF=1, VEL=5)
+        self.ehInimigo = False
 
     def habilidade(self, inimigos): # FOGO: CAUSA DANO A TODOS OS INIMIGOS, MAS TOMA DANO DO PRÓPRIO ATAQUE
         for inimigo in inimigos:
@@ -146,6 +151,7 @@ class Bardo(Personagem):
 
     def __init__(self, nome):
         super().__init__(nome, ATK=1, DEF=3, VEL=5)
+        self.ehInimigo = False
 
     def habilidade(self, alvo): # INSPIRAR: ADICIONA 5 DE MOD EM UM STAT ALEATÓRIO DE UM ALIADO
         stat = random.randint(0,2)
@@ -293,7 +299,7 @@ def atacar(self, alvo): # QUANDO É ESCOLHIDA A OPÇÃO ATAQUE
 
         self.modClear()
 
-def alvoAtaqueAliado(): # ESCOLHE QUAL ALVO OS HERÓIS ATACARÃO
+def alvoAtaqueAliado(Personagens, Inimigos): # ESCOLHE QUAL ALVO OS HERÓIS ATACARÃO
     while True:
         escolha = int (input("Pressione '1' para atacar o Inimigo 1, '2' para o Inimigo 2 ou '3' para o Inimigo 3: "))
         
@@ -321,7 +327,7 @@ def alvoAtaqueAliado(): # ESCOLHE QUAL ALVO OS HERÓIS ATACARÃO
         else:
             print("Escolha inválida. Tente novamente.")
 
-def alvoHabilidadeAliado(): # ESCOLHE QUAL ALVO OS ALIADOS USARÃO A HABILIDADE
+def alvoHabilidadeAliado(Personagens, Aliados): # ESCOLHE QUAL ALVO OS ALIADOS USARÃO A HABILIDADE
     while True:
         escolha = int (input("Pressione '1' para selecionar o Herói 1, '2' para o Herói 2 ou '3' para o Herói 3: "))
         
@@ -349,7 +355,7 @@ def alvoHabilidadeAliado(): # ESCOLHE QUAL ALVO OS ALIADOS USARÃO A HABILIDADE
         else:
             print("Escolha inválida. Tente novamente.")
 
-def alvoAtaqueInimigo(): # ESCOLHE QUAL ALVO OS INIMIGOS ATACARÃO
+def alvoAtaqueInimigo(Personagens, Aliados): # ESCOLHE QUAL ALVO OS INIMIGOS ATACARÃO
     alvos_validos = []
     for i in Personagens:
         if i in Aliados:
@@ -368,7 +374,7 @@ def escolherAcao (): # PARA OS INIMIGOS ESCOLHEREM SUA AÇÃO
     elif acao_escolhida == "atacar":
         atacar(alvo)
     elif acao_escolhida == "habilidade":
-        habilidade()
+        Personagem.habilidade()
 
 def mudarIndice(indice, Personagens): # PASSA A VEZ PRO PRÓXIMO PERSONAGEM NA RODADA SEGUINTE
     tamanhoLista = len(Personagens)
@@ -393,6 +399,8 @@ def fimBatalha(resultado): # MOSTRA O RESULTADO NO FINAL DA PARTIDA
 
 
 def simular():
+    indiceAtual = 0
+
     Aliados = criar_aliados()
     Inimigos = criar_inimigos()
 
@@ -400,6 +408,7 @@ def simular():
     print([str(personagem) for personagem in Personagens])
     ordenaVelocidade(Personagens)
 
+    personagemAtual = Personagens[indiceAtual]
     while True:
 
         # INÍCIO DE UMA RODADA
@@ -407,8 +416,6 @@ def simular():
         ordenaVelocidade(Personagens)
 
         for personagem in Personagens: # PARA CADA PERSONAGEM VIVO
-
-            personagem.vida = 0
 
             if indiceAtual in Aliados: # SE O PERSONAGEM DA RODADA POR UM ALIADO
             
@@ -421,7 +428,7 @@ def simular():
                         if indiceAtual == ("Tanque", "Curandeiro" or "Bardo"):
                             alvo = alvoHabilidadeAliado
 
-                        habilidade()
+                        Personagem.habilidade()
                         indiceAtual = mudarIndice(indiceAtual, Personagens)
                         personagemAtual = Personagens[indiceAtual]
 
@@ -448,22 +455,20 @@ def simular():
                     indiceAtual = mudarIndice(indiceAtual, Personagens)
                     personagemAtual = Personagens[indiceAtual]
 
-            elif indiceAtual in Inimigos: # SE O PERSONAGEM DA RODADA FOR UM INIMIGO
+            elif personagemAtual in Inimigos: # SE O PERSONAGEM DA RODADA FOR UM INIMIGO
                 escolherAcao()
                 indiceAtual = mudarIndice(indiceAtual, Personagens)
                 personagemAtual = Personagens[indiceAtual]
 
             if verificar(Personagens):
                 break
-
+        
         else: 
             continue
 
         break
 
     return None
-
-simular()
 
 ##################################################################################################
 
@@ -479,7 +484,7 @@ pygame.display.set_caption("introbattle")
 clock = pygame.time.Clock()
 
 #plano de fundo e ajuste pro tamanho correto
-fundo = pygame.image.load('imagens/teste 7.png').convert_alpha()
+fundo = pygame.image.load('INTROGAME/INTROCOMP-main/imagens/teste 7.png').convert_alpha()
 tamanho_escala = (1024, 768)
 fundo = pygame.transform.scale(fundo, tamanho_escala)
 
@@ -497,25 +502,25 @@ def desenha_inimigo2():
 	screen.blit(imagem_inimigo2, (690, 350))
 
 #renderizar os personagens e inimigos (escolhi três personagens quaisquer e coloquei dois inimigos só, pra colocar outro só ctrl+c ctrl+v no código)
-imagem_mago = pygame.image.load('imagens/wizardfinal.png').convert_alpha()
-imagem_mago = pygame.transform.scale(imagem_mago, tamanho_escala)
-
-imagem_assassino = pygame.image.load('imagens/rogue.png').convert_alpha()
-imagem_assassino = pygame.transform.scale(imagem_assassino, tamanho_escala)
-
-imagem_guerreiro = pygame.image.load('imagens/Paladino.png').convert_alpha()
+imagem_guerreiro = pygame.image.load('INTROGAME/INTROCOMP-main/imagens/Paladino.png').convert_alpha()
 tamanho_escala = (200, 200)
 imagem_guerreiro = pygame.transform.scale(imagem_guerreiro, tamanho_escala)
 
-imagem_inimigo1 = pygame.image.load('imagens/caveira sprite 2.png').convert_alpha()
+imagem_assassino = pygame.image.load('INTROGAME/INTROCOMP-main/imagens/rogue.png').convert_alpha()
+imagem_assassino = pygame.transform.scale(imagem_assassino, tamanho_escala)
+
+imagem_mago = pygame.image.load('INTROGAME/INTROCOMP-main/imagens/wizardfinal.png').convert_alpha()
+imagem_mago = pygame.transform.scale(imagem_mago, tamanho_escala)
+
+imagem_inimigo1 = pygame.image.load('INTROGAME/INTROCOMP-main/imagens/caveira sprite 2.png').convert_alpha()
 imagem_inimigo1 = pygame.transform.scale(imagem_inimigo1, tamanho_escala)
 
-imagem_inimigo2 = pygame.image.load('imagens/caveira sprite 2.png').convert_alpha()
+imagem_inimigo2 = pygame.image.load('INTROGAME/INTROCOMP-main/imagens/caveira sprite 2.png').convert_alpha()
 imagem_inimigo2 = pygame.transform.scale(imagem_inimigo2, tamanho_escala)
+
 #loop do jogo
 running = True
 while running:
-
     #chama as funções para desenhar os personagens
     desenha_plano_fundo()
     desenha_guerreiro()
@@ -527,9 +532,7 @@ while running:
     #identifica eventos 
     for event in pygame.event.get():
         simular()
-        if (Personagem).PDV < 0:
-            running = False
-        elif event.type == pygame.QUIT:
+        if event.type == pygame.QUIT:
             running = False
         
 
