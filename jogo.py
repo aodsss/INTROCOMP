@@ -6,7 +6,7 @@
 ##################################################################################################
 
 # PARTE DOS PERSONAGENS
-
+import pygame
 import random
 import math
 
@@ -469,9 +469,6 @@ simular()
 
 # PARTE DA INTERFACE
 
-import pygame
-import random
-
 pygame.init() #inicia pygame, informações de janela e fps
 largura_tela, altura_tela = 1024, 768
 fps = 30
@@ -488,39 +485,33 @@ fundo = pygame.transform.scale(fundo, tamanho_escala)
 
 def desenha_plano_fundo():
     screen.blit(fundo, (0, 0))
-
-#renderizar os personagens e inimigos (escolhi três personagens quaisquer e coloquei dois inimigos só, pra colocar outro só ctrl+c ctrl+v no código)
-imagem_guerreiro = pygame.image.load('imagens/Paladino.png').convert_alpha()
-tamanho_escala = (200, 200)
-imagem_guerreiro = pygame.transform.scale(imagem_guerreiro, tamanho_escala)
-
 def desenha_guerreiro():
 	screen.blit(imagem_guerreiro, (312, 384))
+def desenha_assassino():
+	screen.blit(imagem_assassino, (202, 234))
+def desenha_mago():
+	screen.blit(imagem_mago, (182, 484))
+def desenha_inimigo1():
+	screen.blit(imagem_inimigo1, (812, 234))
+def desenha_inimigo2():
+	screen.blit(imagem_inimigo2, (690, 350))
+
+#renderizar os personagens e inimigos (escolhi três personagens quaisquer e coloquei dois inimigos só, pra colocar outro só ctrl+c ctrl+v no código)
+imagem_mago = pygame.image.load('imagens/wizardfinal.png').convert_alpha()
+imagem_mago = pygame.transform.scale(imagem_mago, tamanho_escala)
 
 imagem_assassino = pygame.image.load('imagens/rogue.png').convert_alpha()
 imagem_assassino = pygame.transform.scale(imagem_assassino, tamanho_escala)
 
-def desenha_assassino():
-	screen.blit(imagem_assassino, (202, 234))
-
-imagem_mago = pygame.image.load('imagens/wizardfinal.png').convert_alpha()
-imagem_mago = pygame.transform.scale(imagem_mago, tamanho_escala)
-
-def desenha_mago():
-	screen.blit(imagem_mago, (182, 484))
+imagem_guerreiro = pygame.image.load('imagens/Paladino.png').convert_alpha()
+tamanho_escala = (200, 200)
+imagem_guerreiro = pygame.transform.scale(imagem_guerreiro, tamanho_escala)
 
 imagem_inimigo1 = pygame.image.load('imagens/caveira sprite 2.png').convert_alpha()
 imagem_inimigo1 = pygame.transform.scale(imagem_inimigo1, tamanho_escala)
 
-def desenha_inimigo1():
-	screen.blit(imagem_inimigo1, (812, 234))
-
 imagem_inimigo2 = pygame.image.load('imagens/caveira sprite 2.png').convert_alpha()
 imagem_inimigo2 = pygame.transform.scale(imagem_inimigo2, tamanho_escala)
-
-def desenha_inimigo2():
-	screen.blit(imagem_inimigo2, (690, 350))
-
 #loop do jogo
 running = True
 while running:
